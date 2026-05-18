@@ -1,66 +1,157 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Service Point - Professional Auto Care Platform
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+    <a href="https://sajutaberkah.my.id" target="_blank">
+        <span style="font-size: 2em; font-weight: 900; font-style: italic; color: #1e3a8a; text-transform: uppercase;">SERVICE <span style="color: #1d4ed8;">POINT.</span></span>
+    </a>
 </p>
 
-## About Laravel
+<p align="center">
+    <img src="https://img.shields.io/badge/Laravel-11.x-ED5B5B?style=for-the-badge&logo=laravel" alt="Laravel Version">
+    <img src="https://img.shields.io/badge/Filament-v3.x-F59E0B?style=for-the-badge&logo=laravel" alt="Filament Version">
+    <img src="https://img.shields.io/badge/Tailwind_CSS-v4.0-06B6D4?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS">
+    <img src="https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=for-the-badge&logo=php" alt="PHP Version">
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🛠️ Tentang Service Point
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Service Point** adalah platform sistem informasi dan manajemen bengkel modern (_Professional Auto Care_) yang berlokasi di Jatiasih, Bekasi. Platform ini berfungsi sebagai beranda utama interaksi pelanggan sekaligus sistem manajemen internal (_back-office_) bengkel yang terintegrasi penuh. Platform ini juga merupakan sistem kemitraan resmi selaku **Official TOP 1 Partner**.
 
-## Learning Laravel
+### 🌟 Fitur Utama
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. **Multi-Panel Back-office (Filament v3)**:
+   - **`Dashboard Admin (/admin)`**: Panel manajemen penuh untuk `super_admin` dan `admin` dalam mengelola resource, konfigurasi sistem, dan inventori global.
+   - **`Dashboard Staff (/app)`**: Panel operasional harian yang dikhususkan bagi pengguna dengan role `staff`.
+2. **Katalog Produk Dinamis**:
+   - Menampilkan daftar produk oli (_Genuine Parts & Oils_), suku cadang, dan aksesoris.
+   - Filter kategori interaktif (_All_, _Oli Mesin_, _Suku Cadang_, _Aksesoris_) dan fitur pencarian (_live-search_) berbasis nama/deskripsi.
+   - Dilengkapi penanganan _Rich Text Editor Content_ dengan kompilasi raw HTML aman (`{!! !!}`).
+3. **Sistem Otentikasi Terintegrasi (Laravel Socialite)**:
+   - Login instan satu klik menggunakan akun Google (**Google OAuth**).
+   - Penanganan _Session Regeneration_ yang aman untuk deployment _production / hosting shared_.
+   - Manajemen _Intended Redirect Path_ otomatis yang mengarahkan pengguna secara dinamis ke panel yang sesuai berdasarkan role di database (`super_admin`/`admin` -> `/admin`, `staff` -> `/app`).
+4. **Integrasi WhatsApp Booking**:
+   - Penghubung instan ke admin bengkel menggunakan _URL encoding text template_ otomatis berdasarkan nama produk yang dipilih oleh pelanggan.
+5. **Manajemen Berkas Skasa Besar**:
+   - Dukungan optimasi unggah media gambar produk beresolusi tinggi hingga **20MB** terkonfigurasi via enkapsulasi _file upload schema middleware_.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🚀 Spesifikasi Teknologi
 
-## Laravel Sponsors
+- **Framework Utama**: Laravel 11.x
+- **Tampilan Administrasi**: Filament v3 (Multipanel Architecture)
+- **Sistem CSS**: Tailwind CSS (melalui integrasi CDN & custom utilities script)
+- **Otentikasi Pihak Ketiga**: Laravel Socialite (Google Driver)
+- **Kompilasi Icon & Font**: FontAwesome v6.5.1 & Google Fonts Poppins
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 💻 Instalasi Lokal & Pengembangan
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Ikuti langkah-langkah di bawah ini untuk menjalankan project Service Point di lingkungan lokal Anda (misal: macOS menggunakan Laravel Herd / Docker, atau Windows menggunakan XAMPP):
 
-## Contributing
+### 1. Kloning Repositori
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+git clone [https://github.com/username/service-point.git](https://github.com/username/service-point.git)
+cd service-point
 
-## Code of Conduct
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 2. Pasang Dependensi Composer
 
-## Security Vulnerabilities
+```bash
+composer install
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
 
-## License
+### 3. Konfigurasi Environment File
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Salin file `.env.example` menjadi `.env`:
+
+```bash
+cp .env.example .env
+
+```
+
+Sesuaikan konfigurasi database Anda di dalam `.env`:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=service_point
+DB_USERNAME=root
+DB_PASSWORD=
+
+# Konfigurasi Google OAuth (Socialite)
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GOOGLE_REDIRECT_URI="${APP_URL}/auth/google/callback"
+
+```
+
+### 4. Generate Application Key
+
+```bash
+php artisan key:generate
+
+```
+
+### 5. Jalankan Migrasi & Database Seeder
+
+```bash
+php artisan migrate --seed
+
+```
+
+### 6. Pembuatan Symbolic Link Storage
+
+Pastikan symlink untuk penyimpanan gambar diaktifkan agar foto produk muncul di halaman katalog:
+
+```bash
+php artisan storage:link
+
+```
+
+### 7. Jalankan Server Lokal
+
+```bash
+php artisan serve
+
+```
+
+Aplikasi sekarang dapat diakses melalui browser di alamat `http://127.0.0.1:8000`.
+
+---
+
+## 🌐 Catatan Deployment (Hosting/Shared cPanel)
+
+Jika Anda melakukan deployment pada server _Shared Hosting_ (seperti Domainesia), pastikan parameter pembatasan php diatur untuk mengakomodasi pengunggahan berkas besar di atas 5MB:
+
+1. Masuk ke **cPanel** -> **Select PHP Version** -> Tab **Options**.
+2. Ubah nilai parameter berikut minimal menjadi:
+
+- `upload_max_filesize` = `32M` atau `64M`
+- `post_max_size` = `32M` atau `64M`
+
+3. Jalankan perintah pembersihan cache global melalui terminal hosting setelah melakukan pembaruan kode:
+
+```bash
+php artisan optimize:clear
+php artisan filament:clear-cached-components
+
+```
+
+---
+
+## 🔒 Lisensi
+
+Project ini bersifat proprietary dan dikembangkan khusus untuk operasional internal **Service Point Pro Auto Care**.
+
+```
+
+```
