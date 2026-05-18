@@ -56,7 +56,7 @@ Ikuti langkah-langkah di bawah ini untuk menjalankan project Service Point di li
 ### 1. Kloning Repositori
 
 ```bash
-git clone [https://github.com/username/service-point.git](https://github.com/username/service-point.git)
+git clone [https://github.com/AldiRenaldi19/service-point.git](https://github.com/Aldirenaldi19/service-point.git)
 cd service-point
 
 ```
@@ -153,5 +153,5 @@ php artisan filament:clear-cached-components
 Project ini bersifat proprietary dan dikembangkan khusus untuk operasional internal **Service Point Pro Auto Care**.
 
 ```
-
+Thanks For Attention
 ```
