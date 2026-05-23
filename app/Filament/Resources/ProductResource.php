@@ -2,21 +2,32 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ProductResource\Pages;
-use App\Models\Product;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Set;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Product;
+use Filament\Forms\Set;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\SelectFilter;
+use App\Filament\Resources\ProductResource\Pages;
 
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    // Icon shopping cart biar lebih relevan buat katalog
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
 
     protected static ?string $navigationLabel = 'Katalog Produk';
@@ -25,85 +36,93 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Informasi Utama')
+                Section::make('Informasi Utama')
                     ->description('Detail nama, kategori, dan identitas brand produk.')
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->label('Nama Produk')
                             ->required()
+                            ->maxLength(255)
                             ->live(onBlur: true)
                             ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
 
-                        Forms\Components\TextInput::make('slug')
+                        TextInput::make('slug')
+                            ->label('Slug URL')
                             ->required()
+                            ->maxLength(255)
                             ->unique(Product::class, 'slug', ignoreRecord: true)
-                            ->helperText('URL otomatis terisi dari nama produk.'),
+                            ->helperText('URL unik otomatis terisi dari nama produk.'),
 
-                        Forms\Components\Select::make('category')
+                        Select::make('category')
                             ->label('Kategori')
                             ->options([
                                 'Oli Mesin' => 'Oli Mesin',
                                 'Suku Cadang' => 'Suku Cadang',
                                 'Aksesoris' => 'Aksesoris',
+                                'Lainnya' => 'Lainnya',
                             ])
-                            ->required(),
+                            ->required()
+                            ->native(false),
 
-                        Forms\Components\TextInput::make('brand')
+                        TextInput::make('brand')
+                            ->label('Brand / Merek')
                             ->default('TOP 1')
-                            ->required(),
-                    ])->columns(2),
-
-                Forms\Components\Section::make('Harga & Inventori')
-                    ->schema([
-                        Forms\Components\TextInput::make('price')
-                            ->label('Harga Jual')
-                            ->numeric()
-                            ->prefix('Rp')
+                            ->maxLength(255)
                             ->required(),
 
-                        Forms\Components\TextInput::make('stock')
-                            ->label('Jumlah Stok')
-                            ->numeric()
-                            ->default(0)
-                            ->required(),
-
-                        Forms\Components\Toggle::make('is_active')
+                        Toggle::make('is_active')
                             ->label('Tampilkan di Website')
                             ->default(true)
                             ->onColor('success'),
-                    ])->columns(3),
+                    ])->columns(2),
 
-                Forms\Components\Section::make('Detail Konten')
+                Section::make('Detail Konten')
                     ->description('Penjelasan mendalam mengenai spesifikasi dan kegunaan produk.')
                     ->schema([
-                        Forms\Components\FileUpload::make('image')
+                        FileUpload::make('image')
                             ->label('Foto Produk')
                             ->image()
                             ->directory('products')
                             ->visibility('public')
-                            ->imageEditor() // Biar bisa crop/resize langsung di admin
+                            ->imageEditor()
+                            ->maxSize(2048) // Membatasi upload gambar maksimal 2MB demi menghemat penyimpanan disk
                             ->columnSpanFull(),
 
-                        Forms\Components\TextInput::make('spec')
+                        TextInput::make('spec')
                             ->label('Spesifikasi Singkat')
                             ->placeholder('Contoh: 10W-40 / SAE 20W-50')
+                            ->maxLength(255)
                             ->columnSpanFull(),
 
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\Textarea::make('fungsi')
+                                Textarea::make('fungsi')
                                     ->label('Fungsi Utama')
                                     ->placeholder('Jelaskan fungsi utama produk ini...')
+                                    ->maxLength(1000)
                                     ->rows(3),
 
-                                Forms\Components\Textarea::make('manfaat')
+                                Textarea::make('manfaat')
                                     ->label('Manfaat Produk')
                                     ->placeholder('Apa manfaat yang didapat konsumen?')
+                                    ->maxLength(1000)
                                     ->rows(3),
                             ]),
 
-                        Forms\Components\RichEditor::make('description')
+                        RichEditor::make('description')
                             ->label('Deskripsi Lengkap')
+                            ->toolbarButtons([
+                                'blockquote',
+                                'bold',
+                                'bulletList',
+                                'codeBlock',
+                                'heading',
+                                'italic',
+                                'link',
+                                'orderedList',
+                                'redo',
+                                'undo'
+                            ]) // Membatasi tombol rich editor untuk mencegah eksploitasi tag HTML rusak
                             ->columnSpanFull(),
                     ]),
             ]);
@@ -113,17 +132,17 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image')
+                ImageColumn::make('image')
                     ->label('Foto')
                     ->circular(),
 
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Nama Produk')
                     ->searchable()
                     ->sortable()
                     ->wrap(),
 
-                Tables\Columns\TextColumn::make('category')
+                TextColumn::make('category')
                     ->label('Kategori')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
@@ -133,27 +152,18 @@ class ProductResource extends Resource
                         default => 'gray',
                     }),
 
-                Tables\Columns\TextColumn::make('price')
-                    ->label('Harga')
-                    ->money('IDR')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('stock')
-                    ->label('Stok')
-                    ->numeric()
-                    ->sortable()
-                    ->alignCenter(),
-
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->label('Status')
                     ->boolean(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('category')
+                SelectFilter::make('category')
+                    ->label('Kategori')
                     ->options([
                         'Oli Mesin' => 'Oli Mesin',
                         'Suku Cadang' => 'Suku Cadang',
                         'Aksesoris' => 'Aksesoris',
+                        'Lainnya' => 'Lainnya',
                     ]),
             ])
             ->actions([
@@ -165,11 +175,6 @@ class ProductResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [];
     }
 
     public static function getPages(): array

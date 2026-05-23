@@ -1,52 +1,41 @@
 <x-filament-widgets::widget>
-    <x-filament::section class="overflow-hidden !p-0 border-none shadow-sm">
-        <div class="relative p-6 bg-white dark:bg-gray-900">
-            <div class="flex flex-col md:flex-row items-center gap-5 relative z-10">
+    <x-filament::section class="overflow-hidden !p-0 border-none shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10">
+        <div class="relative p-6 bg-white dark:bg-gray-900 transition-colors duration-300">
+            
+            {{-- 🛠️ FORCE GRID: Di desktop langsung dipatok jadi 12 kolom --}}
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-center relative z-10 w-full">
                 
-                {{-- Foto Profil User (Menggunakan logic yang baru kita buat) --}}
-                <div class="flex-shrink-0">
-                    @if(auth()->user()->getFilamentAvatarUrl())
-                        <img src="{{ auth()->user()->getFilamentAvatarUrl() }}" 
-                            alt="{{ auth()->user()->name }}" 
-                            class="w-20 h-20 rounded-2xl object-cover shadow-md border-2 border-white dark:border-gray-800 rotate-2">
-                    @else
-                        {{-- Fallback jika tidak ada foto --}}
-                        <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/40 rotate-3">
-                            <span class="text-2xl font-bold text-white">{{ substr(auth()->user()->name, 0, 1) }}</span>
-                        </div>
-                    @endif
-                </div>
-
-                {{-- Greeting Text --}}
-                <div class="text-center md:text-left flex-1">
-                    <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-                        Selamat datang kembali, {{ explode(' ', trim(auth()->user()->name))[0] }}! ✨
+                {{-- ==========================================
+                     1. DYNAMIC GREETING CONTENT (GRID LOCK)
+                     ========================================== --}}
+                {{-- 🛠️ Teks dipaksa mengambil 9 dari 12 kolom ruang desktop --}}
+                <div class="text-center md:text-left md:col-span-9 w-full">
+                    <h2 class="text-xl font-bold text-gray-950 dark:text-white tracking-tight block">
+                        Selamat datang kembali, {{ explode(' ', trim(auth()->user()->name))[0] }}!
                     </h2>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1 leading-relaxed">
-                        Senang melihatmu lagi. Semuanya terkendali di <span class="font-semibold text-blue-600">Service Point</span>. 
-                        Ayo cek stok hari ini atau buat artikel blog baru.
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1 leading-relaxed max-w-full block">
+                        Senang melihatmu lagi. Semuanya terkendali di <span class="font-bold text-blue-600 dark:text-blue-400">Service Point</span>. 
+                        Ayo cek stok hari ini atau buat artikel blog baru untuk pelanggan.
                     </p>
                 </div>
 
-                {{-- Action Button --}}
-                <div class="md:ml-auto">
+                {{-- ==========================================
+                     2. QUICK ACTION SHORTCUT
+                     ========================================== --}}
+                {{-- 🛠️ Tombol mengambil sisa 3 kolom di desktop --}}
+                <div class="md:col-span-3 w-full flex justify-center md:justify-end">
                     <x-filament::button 
                         href="{{ route('blog.index') }}" 
                         tag="a" 
                         target="_blank"
                         color="gray" 
                         icon="heroicon-m-arrow-top-right-on-square"
-                        icon-alias="panels::widgets.account.logout-button"
-                        class="rounded-xl shadow-none border-slate-200"
+                        class="rounded-xl shadow-sm border-gray-200 dark:border-gray-700 w-full md:w-auto justify-center"
                     >
                         Lihat Blog
                     </x-filament::button>
                 </div>
-            </div>
 
-            {{-- Dekorasi Minimalis --}}
-            <div class="absolute top-0 right-0 p-4 opacity-10">
-                <x-heroicon-o-sparkles class="w-24 h-24 text-blue-500" />
             </div>
         </div>
     </x-filament::section>

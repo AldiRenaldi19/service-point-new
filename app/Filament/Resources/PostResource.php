@@ -2,18 +2,25 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PostResource\Pages;
-use App\Filament\Resources\PostResource\RelationManagers;
-use App\Models\Post;
 use Filament\Forms;
-use Filament\Forms\Form;
+use App\Models\Post;
+use Filament\Tables;
 use Filament\Forms\Set;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use App\Filament\Resources\PostResource\Pages;
 
 class PostResource extends Resource
 {
@@ -21,44 +28,54 @@ class PostResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationLabel = 'Artikel / Blog';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Konten Utama')
+                Section::make('Konten Utama')
                     ->schema([
-                        Forms\Components\TextInput::make('title')
+                        TextInput::make('title')
+                            ->label('Judul Artikel')
                             ->required()
+                            ->maxLength(255)
                             ->live(onBlur: true)
                             ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
 
-                        Forms\Components\TextInput::make('slug')
+                        TextInput::make('slug')
+                            ->label('Slug URL')
                             ->required()
+                            ->maxLength(255)
                             ->unique(Post::class, 'slug', ignoreRecord: true),
 
-                        Forms\Components\RichEditor::make('content')
+                        RichEditor::make('content')
+                            ->label('Isi Artikel')
                             ->required()
                             ->fileAttachmentsDirectory('blog')
+                            ->fileAttachmentsVisibility('public')
                             ->columnSpanFull(),
                     ])->columns(2),
 
-                Forms\Components\Section::make('Media & Status')
+                Section::make('Media & Status')
                     ->schema([
-                        Forms\Components\FileUpload::make('thumbnail')
+                        FileUpload::make('thumbnail')
+                            ->label('Foto Sampul')
                             ->image()
                             ->directory('blog-thumbnails')
-                            ->label('Foto Sampul'),
+                            ->visibility('public')
+                            ->maxSize(2048),
 
-                        // Grouping Video biar rapi
-                        Forms\Components\Grid::make(1)
+                        Grid::make(1)
                             ->schema([
-                                Forms\Components\TextInput::make('video_url')
+                                TextInput::make('video_url')
                                     ->url()
                                     ->label('Link Video (YouTube)')
                                     ->placeholder('https://www.youtube.com/watch?v=...')
+                                    ->maxLength(255)
                                     ->helperText('Kosongkan jika ingin upload video manual'),
 
-                                Forms\Components\FileUpload::make('video_file')
+                                FileUpload::make('video_file')
                                     ->label('Atau Upload File Video')
                                     ->directory('blog-videos')
                                     ->acceptedFileTypes(['video/mp4', 'video/ogg', 'video/webm'])
@@ -66,13 +83,20 @@ class PostResource extends Resource
                                     ->helperText('Format: mp4, ogg, webm. Maksimal 50MB'),
                             ]),
 
-                        Forms\Components\Select::make('user_id')
+                        // ==========================================================
+                        // 🔒 SECURITY PROTECTION: ANTI AUTHOR ESCALATION FRAUD
+                        // ==========================================================
+                        // Mengunci hak kepenulisan secara otomatis kepada user yang sedang login.
+                        // Komponen ini dinonaktifkan (disabled) demi menghindari manipulasi ID Penulis.
+                        Select::make('user_id')
+                            ->label('Penulis')
                             ->relationship('user', 'name')
                             ->default(auth()->id())
-                            ->required()
-                            ->label('Penulis'),
+                            ->disabled()
+                            ->dehydrated() // Memastikan nilai ID penulis tetap ikut dikirim ke database meskipun berstatus disabled
+                            ->required(),
 
-                        Forms\Components\Toggle::make('status')
+                        Toggle::make('status')
                             ->label('Terbitkan Artikel')
                             ->onColor('success')
                             ->offColor('danger'),
@@ -84,24 +108,30 @@ class PostResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('thumbnail')
+                ImageColumn::make('thumbnail')
+                    ->label('Sampul')
                     ->circular(),
-                Tables\Columns\TextColumn::make('title')
+
+                TextColumn::make('title')
+                    ->label('Judul')
                     ->searchable()
+                    ->sortable()
                     ->limit(50),
-                Tables\Columns\IconColumn::make('status')
-                    ->boolean()
-                    ->label('Published'),
-                Tables\Columns\TextColumn::make('user.name')
-                    ->label('Penulis'),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+
+                IconColumn::make('status')
+                    ->label('Published')
+                    ->boolean(),
+
+                TextColumn::make('user.name')
+                    ->label('Penulis')
+                    ->sortable(),
+
+                TextColumn::make('created_at')
+                    ->label('Tanggal Rilis')
+                    ->dateTime('d M Y H:i')
                     ->sortable(),
             ])
-            ->filters([
-                //
-            ])
-            // TAMBAHKAN BLOK INI DIBAWAH FILTERS
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
@@ -111,13 +141,6 @@ class PostResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

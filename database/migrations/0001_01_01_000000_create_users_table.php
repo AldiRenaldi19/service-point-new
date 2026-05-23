@@ -8,32 +8,46 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * * Membuat fondasi tabel pengguna, sistem token reset sandi, 
+     * serta manajemen sesi autentikasi aplikasi Service Point.
      */
     public function up(): void
     {
+        // ==========================================
+        // 1. SYSTEM USERS TABLE
+        // ==========================================
         Schema::create('users', function (Blueprint $table) {
+            // Primary Key & Informasi Autentikasi Dasar
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password')->nullable(); // Dibuat nullable karena login Google nggak butuh password manual
 
-            // --- Tambahan Kolom Baru ---
+            // Diperbolehkan Kosong (Nullable) Karena Mendukung Jalur Google Sign-In
+            $table->string('password')->nullable();
+
+            // Komponen Tambahan Ekstensi Google Auth & Filament Roles
             $table->string('google_id')->nullable()->unique();
             $table->string('avatar')->nullable();
-            $table->string('role')->default('staff'); // Contoh: 'super_admin', 'admin', 'staff'
-            // ---------------------------
+            $table->string('role')->default('customer'); // Nilai Default Diubah Menjadi 'customer' Demi Keamanan Pendaftaran Mandiri
 
+            // Struktur Bawaan Laravel Framework
             $table->rememberToken();
             $table->timestamps();
         });
 
+        // ==========================================
+        // 2. PASSWORD RESET TOKENS TABLE
+        // ==========================================
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
 
+        // ==========================================
+        // 3. DATABASE SESSIONS TABLE
+        // ==========================================
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
@@ -46,11 +60,12 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
+     * * Menghapus seluruh tabel sistem jika perintah rollback dijalankan.
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };

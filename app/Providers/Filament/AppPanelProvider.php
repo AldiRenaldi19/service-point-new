@@ -2,22 +2,23 @@
 
 namespace App\Providers\Filament;
 
-use Filament\Http\Middleware\Authenticate;
-use Filament\Http\Middleware\AuthenticateSession;
-use Filament\Http\Middleware\DisableBladeIconComponents;
-use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use Filament\Panel;
+use Filament\Widgets;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
 use Filament\Navigation\NavigationItem;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Routing\Middleware\SubstituteBindings;
+use Filament\Http\Middleware\Authenticate;
+use App\Filament\App\Widgets\UserWelcome;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Filament\Http\Middleware\AuthenticateSession;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Http\Middleware\DisableBladeIconComponents;
+use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
 class AppPanelProvider extends PanelProvider
 {
@@ -28,28 +29,39 @@ class AppPanelProvider extends PanelProvider
             ->id('app')
             ->path('app')
             ->login()
+
+            // Google OAuth Injection hook
+            ->renderHook(
+                'panels::auth.login.form.after',
+                fn(): \Illuminate\Contracts\View\View => view('auth.google-button'),
+            )
+
             ->brandName('Service Point')
-            ->homeUrl('/') // Klik logo balik ke Landing Page
+            ->homeUrl('/')
             ->colors([
-                'primary' => Color::Amber, // Identitas warna User (Amber/Gold)
+                'primary' => Color::Amber,
             ])
             ->font('Poppins')
+
             ->navigationItems([
                 NavigationItem::make('Kembali ke Website')
                     ->url('/', shouldOpenInNewTab: false)
                     ->icon('heroicon-o-arrow-left-on-rectangle')
                     ->sort(-1),
             ])
+
             ->discoverResources(in: app_path('Filament/App/Resources'), for: 'App\\Filament\\App\\Resources')
             ->discoverPages(in: app_path('Filament/App/Pages'), for: 'App\\Filament\\App\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
+
             ->discoverWidgets(in: app_path('Filament/App/Widgets'), for: 'App\\Filament\\App\\Widgets')
             ->widgets([
-                \App\Filament\Widgets\UserWelcome::class,
+                UserWelcome::class,
                 Widgets\AccountWidget::class,
             ])
+
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

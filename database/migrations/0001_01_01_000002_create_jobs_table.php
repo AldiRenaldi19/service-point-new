@@ -8,9 +8,14 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * * Membuat infrastruktur antrean (Queue System) untuk menangani pemrosesan data asynchronous,
+     * batching jobs, dan log kegagalan tugas pada aplikasi Service Point.
      */
     public function up(): void
     {
+        // ==========================================
+        // 1. SYSTEM JOLES/QUEUES TABLE
+        // ==========================================
         Schema::create('jobs', function (Blueprint $table) {
             $table->id();
             $table->string('queue')->index();
@@ -21,6 +26,9 @@ return new class extends Migration
             $table->unsignedInteger('created_at');
         });
 
+        // ==========================================
+        // 2. JOB BATCHING MANAGEMENT TABLE
+        // ==========================================
         Schema::create('job_batches', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->string('name');
@@ -34,6 +42,9 @@ return new class extends Migration
             $table->integer('finished_at')->nullable();
         });
 
+        // ==========================================
+        // 3. FAILED JOBS TRACKING TABLE
+        // ==========================================
         Schema::create('failed_jobs', function (Blueprint $table) {
             $table->id();
             $table->string('uuid')->unique();
@@ -47,11 +58,12 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
+     * * Menghapus seluruh tabel infrastruktur antrean secara bersih saat rollback.
      */
     public function down(): void
     {
-        Schema::dropIfExists('jobs');
-        Schema::dropIfExists('job_batches');
         Schema::dropIfExists('failed_jobs');
+        Schema::dropIfExists('job_batches');
+        Schema::dropIfExists('jobs');
     }
 };

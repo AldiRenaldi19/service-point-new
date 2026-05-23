@@ -8,15 +8,23 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * * Membuat infrastruktur penyimpanan cache dan sistem atomic locking
+     * untuk mengoptimalkan performa kueri aplikasi Service Point.
      */
     public function up(): void
     {
+        // ==========================================
+        // 1. SYSTEM CACHE TABLE
+        // ==========================================
         Schema::create('cache', function (Blueprint $table) {
             $table->string('key')->primary();
             $table->mediumText('value');
             $table->integer('expiration');
         });
 
+        // ==========================================
+        // 2. CACHE LOCKS TABLE (ATOMIC LOCKS)
+        // ==========================================
         Schema::create('cache_locks', function (Blueprint $table) {
             $table->string('key')->primary();
             $table->string('owner');
@@ -26,10 +34,11 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
+     * * Menghapus tabel cache dan cache_locks secara bersih saat rollback.
      */
     public function down(): void
     {
-        Schema::dropIfExists('cache');
         Schema::dropIfExists('cache_locks');
+        Schema::dropIfExists('cache');
     }
 };

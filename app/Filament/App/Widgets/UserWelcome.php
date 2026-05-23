@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Filament\Widgets;
+namespace App\Filament\App\Widgets;
 
 use Filament\Widgets\Widget;
 
 class UserWelcome extends Widget
 {
-    protected static string $view = 'filament.widgets.user-welcome';
+    // Memastikan path view presisi menggunakan notasi titik (dot notation)
+    protected static string $view = 'filament.app.widgets.user-welcome';
 
-    // Biar muncul paling atas di panel User
     protected static ?int $sort = 1;
 
-    // Biar lebarnya full 1 baris
     protected int | string | array $columnSpan = 'full';
 }
