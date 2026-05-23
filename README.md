@@ -22,7 +22,7 @@
 ### 🌟 Fitur Utama
 
 1. **Multi-Panel Back-office (Filament v3)**:
-   - **`Dashboard Admin (/admin)`**: Panel manajemen penuh untuk `super_admin` dan `admin` dalam mengelola resource, konfigurasi sistem, dan inventori global.
+   - **`Dashboard Admin (/admin)`**: Panel manajemen penuh untuk `super_admin` and `admin` dalam mengelola resource, konfigurasi sistem, dan inventori global.
    - **`Dashboard Staff (/app)`**: Panel operasional harian yang dikhususkan bagi pengguna dengan role `staff`.
 2. **Katalog Produk Dinamis**:
    - Menampilkan daftar produk oli (_Genuine Parts & Oils_), suku cadang, dan aksesoris.
@@ -34,7 +34,7 @@
    - Manajemen _Intended Redirect Path_ otomatis yang mengarahkan pengguna secara dinamis ke panel yang sesuai berdasarkan role di database (`super_admin`/`admin` -> `/admin`, `staff` -> `/app`).
 4. **Integrasi WhatsApp Booking**:
    - Penghubung instan ke admin bengkel menggunakan _URL encoding text template_ otomatis berdasarkan nama produk yang dipilih oleh pelanggan.
-5. **Manajemen Berkas Skasa Besar**:
+5. **Manajemen Berkas Skala Besar**:
    - Dukungan optimasi unggah media gambar produk beresolusi tinggi hingga **20MB** terkonfigurasi via enkapsulasi _file upload schema middleware_.
 
 ---
@@ -43,7 +43,7 @@
 
 - **Framework Utama**: Laravel 11.x
 - **Tampilan Administrasi**: Filament v3 (Multipanel Architecture)
-- **Sistem CSS**: Tailwind CSS (melalui integrasi CDN & custom utilities script)
+- **Sistem CSS**: Tailwind CSS
 - **Otentikasi Pihak Ketiga**: Laravel Socialite (Google Driver)
 - **Kompilasi Icon & Font**: FontAwesome v6.5.1 & Google Fonts Poppins
 
@@ -56,16 +56,18 @@ Ikuti langkah-langkah di bawah ini untuk menjalankan project Service Point di li
 ### 1. Kloning Repositori
 
 ```bash
-git clone [https://github.com/AldiRenaldi19/service-point.git](https://github.com/Aldirenaldi19/service-point.git)
-cd service-point
-
+git clone https://github.com/AldiRenaldi19/service-point-new.git
+cd service-point-new
 ```
 
-### 2. Pasang Dependensi Composer
+### 2. Pasang Dependensi Composer & NPM
 
 ```bash
+# Pasang dependensi PHP
 composer install
 
+# Pasang dependensi JavaScript/CSS
+npm install
 ```
 
 ### 3. Konfigurasi Environment File
@@ -74,10 +76,9 @@ Salin file `.env.example` menjadi `.env`:
 
 ```bash
 cp .env.example .env
-
 ```
 
-Sesuaikan konfigurasi database Anda di dalam `.env`:
+Sesuaikan konfigurasi database dan Google OAuth Anda di dalam `.env`:
 
 ```env
 DB_CONNECTION=mysql
@@ -91,37 +92,44 @@ DB_PASSWORD=
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 GOOGLE_REDIRECT_URI="${APP_URL}/auth/google/callback"
-
 ```
 
 ### 4. Generate Application Key
 
 ```bash
 php artisan key:generate
-
 ```
 
-### 5. Jalankan Migrasi & Database Seeder
+### 5. Jalankan Migrasi, Database Seeder & Storage Link
 
 ```bash
+# Jalankan migrasi database beserta data awal (seeder)
 php artisan migrate --seed
 
-```
-
-### 6. Pembuatan Symbolic Link Storage
-
-Pastikan symlink untuk penyimpanan gambar diaktifkan agar foto produk muncul di halaman katalog:
-
-```bash
+# Hubungkan folder storage agar gambar produk dapat diakses publik
 php artisan storage:link
-
 ```
 
-### 7. Jalankan Server Lokal
+### 6. Membuat Akun Akses Panel (Filament User)
+
+Jika Anda ingin membuat akun admin baru secara manual untuk masuk ke back-office, jalankan perintah berikut:
 
 ```bash
+php artisan make:filament-user
+```
+
+_Ikuti instruksi di terminal untuk mengisi nama, email, dan password._
+
+### 7. Jalankan Server Lokal & Kompilasi Aset
+
+Jalankan perintah ini di dua tab terminal terpisah:
+
+```bash
+# Terminal 1: Jalankan server Laravel
 php artisan serve
 
+# Terminal 2: Jalankan compiler aset untuk Tailwind CSS
+npm run dev
 ```
 
 Aplikasi sekarang dapat diakses melalui browser di alamat `http://127.0.0.1:8000`.
@@ -134,17 +142,17 @@ Jika Anda melakukan deployment pada server _Shared Hosting_ (seperti Domainesia)
 
 1. Masuk ke **cPanel** -> **Select PHP Version** -> Tab **Options**.
 2. Ubah nilai parameter berikut minimal menjadi:
-
-- `upload_max_filesize` = `32M` atau `64M`
-- `post_max_size` = `32M` atau `64M`
-
-3. Jalankan perintah pembersihan cache global melalui terminal hosting setelah melakukan pembaruan kode:
-
-```bash
-php artisan optimize:clear
-php artisan filament:clear-cached-components
-
-```
+   - `upload_max_filesize` = `32M` atau `64M`
+   - `post_max_size` = `32M` atau `64M`
+3. Pastikan Anda melakukan build aset produksi terlebih dahulu sebelum mendeploy:
+   ```bash
+   npm run build
+   ```
+4. Jalankan perintah pembersihan cache global melalui terminal hosting setelah melakukan pembaruan kode:
+   ```bash
+   php artisan optimize:clear
+   php artisan filament:clear-cached-components
+   ```
 
 ---
 
